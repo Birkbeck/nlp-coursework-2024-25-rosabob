@@ -57,11 +57,8 @@ def read_novels(path=Path.cwd() / "texts" / "novels"):
         item = item.strip(".txt")
         paramlist = item.split("-")
         df = df._append({"text" : text, "title" : paramlist[0], "author" : paramlist[1], "year": paramlist[2]}, ignore_index = True)
+        df = df.sort_values(by = ["year"], ignore_index = True)
     return df
-
-
- #df = pd.DataFrame({'Filename': file_list})
- #df = df.append(new_row, ignore_index=True)
 
 
 def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
@@ -116,6 +113,7 @@ if __name__ == "__main__":
     """
     path = Path.cwd() / "datafiles" / "novels"
     df = read_novels(path) # this line will fail until you have completed the read_novels function above.
+    #print(df.head(5))
     nltk.download("cmudict")
     #parse(df)
     #print(df.head())

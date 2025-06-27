@@ -3,13 +3,14 @@
 # Note: The template functions here and the dataframe format for structuring your solution is a suggested but not mandatory approach. You can use a different approach if you like, as long as you clearly answer the questions and communicate your answers clearly.
 #import os
 from pathlib import Path
-
-#print("cwd is", os.getcwd())
-path = Path.cwd() / "datafiles" / "novels"
-exit()
-
 import nltk
 import spacy
+import pandas as pd
+import os
+
+#print("cwd is", os.getcwd())
+#path = Path.cwd() / "datafiles" / "novels"
+
 
 
 
@@ -49,7 +50,18 @@ def count_syl(word, d):
 def read_novels(path=Path.cwd() / "texts" / "novels"):
     """Reads texts from a directory of .txt files and returns a DataFrame with the text, title,
     author, and year"""
-    pass
+    df= pd.DataFrame(columns = ["text","title","author","year"])
+    for item in os.listdir(path):
+        filepath = (str(path) +"/"+ str(item))
+        text = pd.read_csv(filepath, sep='delimiter', header=None)
+        item = item.strip(".txt")
+        paramlist = item.split("-")
+        df = df._append({"text" : text, "title" : paramlist[0], "author" : paramlist[1], "year": paramlist[2]}, ignore_index = True)
+    return df
+
+
+ #df = pd.DataFrame({'Filename': file_list})
+ #df = df.append(new_row, ignore_index=True)
 
 
 def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
@@ -103,10 +115,8 @@ if __name__ == "__main__":
     uncomment the following lines to run the functions once you have completed them
     """
     path = Path.cwd() / "datafiles" / "novels"
-    #print(path)
-    #df = read_novels(path) # this line will fail until you have completed the read_novels function above.
-    #print(df.head())
-    #nltk.download("cmudict")
+    df = read_novels(path) # this line will fail until you have completed the read_novels function above.
+    nltk.download("cmudict")
     #parse(df)
     #print(df.head())
     #print(get_ttrs(df))

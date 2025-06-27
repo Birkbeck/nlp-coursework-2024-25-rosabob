@@ -1,10 +1,16 @@
 #Re-assessment template 2025
 
 # Note: The template functions here and the dataframe format for structuring your solution is a suggested but not mandatory approach. You can use a different approach if you like, as long as you clearly answer the questions and communicate your answers clearly.
+#import os
+from pathlib import Path
+
+#print("cwd is", os.getcwd())
+path = Path.cwd() / "datafiles" / "novels"
+exit()
 
 import nltk
 import spacy
-from pathlib import Path
+
 
 
 nlp = spacy.load("en_core_web_sm")
@@ -96,7 +102,7 @@ if __name__ == "__main__":
     """
     uncomment the following lines to run the functions once you have completed them
     """
-    #path = Path.cwd() / "p1-texts" / "novels"
+    path = Path.cwd() / "datafiles" / "novels"
     #print(path)
     #df = read_novels(path) # this line will fail until you have completed the read_novels function above.
     #print(df.head())

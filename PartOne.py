@@ -7,6 +7,7 @@ import nltk
 import spacy
 import pandas as pd
 import os
+from nltk.tokenize import word_tokenize
 
 #print("cwd is", os.getcwd())
 #path = Path.cwd() / "datafiles" / "novels"
@@ -76,9 +77,11 @@ def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
     the resulting  DataFrame to a pickle file"""
 
 def nltk_ttr(text):
+    nltk.download('punkt')
+    nltk.download('punkt_tab')
+    output = word_tokenize(text)
+    print (output)
     """Calculates the type-token ratio of a text. Text is tokenized using nltk.word_tokenize."""
-    pass
-
 
 def get_ttrs(df):
     """helper function to add ttr to a dataframe"""
@@ -121,9 +124,9 @@ if __name__ == "__main__":
     """
     path = Path.cwd() / "datafiles" / "novels"
     df = read_novels(path) # this line will fail until you have completed the read_novels function above.
-    #print(df.head(5))
-    #nltk.download("cmudict")
+    nltk.download("cmudict")
     df = parse(df)
+    nltk_ttr("Example of a sentence to be tokenized")
     #print(get_ttrs(df))
     #print(get_fks(df))
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")

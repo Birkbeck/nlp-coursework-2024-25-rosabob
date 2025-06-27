@@ -50,22 +50,30 @@ def count_syl(word, d):
 def read_novels(path=Path.cwd() / "texts" / "novels"):
     """Reads texts from a directory of .txt files and returns a DataFrame with the text, title,
     author, and year"""
-    df= pd.DataFrame(columns = ["text","title","author","year"])
+    df= pd.DataFrame()
     for item in os.listdir(path):
         filepath = (str(path) +"/"+ str(item))
         text = pd.read_csv(filepath, sep='delimiter', header=None)
         item = item.strip(".txt")
         paramlist = item.split("-")
-        df = df._append({"text" : text, "title" : paramlist[0], "author" : paramlist[1], "year": paramlist[2]}, ignore_index = True)
+        itemdict = {"title" : paramlist[0], "author" : paramlist[1], "year": paramlist[2], "text" : text}
+        df = df._append(itemdict, ignore_index = True)
         df = df.sort_values(by = ["year"], ignore_index = True)
     return df
 
 
 def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
+    parseddocs = []
+    nlp = spacy.load("en_core_web_sm") #Loads english language for spacy 
+    for row in df.iterrows():
+        parsed = nlp(str(row[1]["text"]))
+        parseddocs.append(parsed)
+    new_column = {"Parsed Doc": parseddocs}
+    df = df.assign(**new_column)
+    df.to_pickle("./parsed.pickle")
+    return df
     """Parses the text of a DataFrame using spaCy, stores the parsed docs as a column and writes 
     the resulting  DataFrame to a pickle file"""
-    pass
-
 
 def nltk_ttr(text):
     """Calculates the type-token ratio of a text. Text is tokenized using nltk.word_tokenize."""
@@ -114,9 +122,8 @@ if __name__ == "__main__":
     path = Path.cwd() / "datafiles" / "novels"
     df = read_novels(path) # this line will fail until you have completed the read_novels function above.
     #print(df.head(5))
-    nltk.download("cmudict")
-    #parse(df)
-    #print(df.head())
+    #nltk.download("cmudict")
+    df = parse(df)
     #print(get_ttrs(df))
     #print(get_fks(df))
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")

@@ -8,6 +8,8 @@ import spacy
 import pandas as pd
 import os
 from nltk.tokenize import word_tokenize
+import string
+
 
 #print("cwd is", os.getcwd())
 #path = Path.cwd() / "datafiles" / "novels"
@@ -52,6 +54,7 @@ def read_novels(path=Path.cwd() / "texts" / "novels"):
     """Reads texts from a directory of .txt files and returns a DataFrame with the text, title,
     author, and year"""
     df= pd.DataFrame()
+    pd.set_option('display.max_colwidth', 10000)
     for item in os.listdir(path):
         filepath = (str(path) +"/"+ str(item))
         text = pd.read_csv(filepath, sep='delimiter', header=None)
@@ -77,17 +80,31 @@ def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
     the resulting  DataFrame to a pickle file"""
 
 def nltk_ttr(text):
-    nltk.download('punkt')
-    nltk.download('punkt_tab')
+    #nltk.download('punkt')
+    #nltk.download('punkt_tab')
+    text = text.translate(str.maketrans('', '',string.punctuation))
+    text = text.translate(str.maketrans('', '',string.digits))
     output = word_tokenize(text)
-    print (output)
+    return output
+
     """Calculates the type-token ratio of a text. Text is tokenized using nltk.word_tokenize."""
 
 def get_ttrs(df):
     """helper function to add ttr to a dataframe"""
     results = {}
     for i, row in df.iterrows():
-        results[row["title"]] = nltk_ttr(row["text"])
+        results[(row["title"])] = nltk_ttr(str(row["text"]))
+    unique_words = set()
+    total_word_count = 0
+    for book in results.values():
+        book_word_count = len(book)
+        total_word_count += book_word_count
+        for word in book:
+            unique_words.add(word)
+        unique_word_count = len(unique_words)
+        ttr = (total_word_count / unique_word_count)
+        print(ttr)
+
     return results
 
 
@@ -126,8 +143,8 @@ if __name__ == "__main__":
     df = read_novels(path) # this line will fail until you have completed the read_novels function above.
     nltk.download("cmudict")
     df = parse(df)
-    nltk_ttr("Example of a sentence to be tokenized")
-    #print(get_ttrs(df))
+    #nltk_ttr("Example of a sentence to be tokenized")
+    get_ttrs(df)
     #print(get_fks(df))
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")
     # print(adjective_counts(df))

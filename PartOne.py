@@ -57,7 +57,7 @@ def read_novels(path=Path.cwd() / "texts" / "novels"):
     pd.set_option('display.max_colwidth', 10000)
     for item in os.listdir(path):
         filepath = (str(path) +"/"+ str(item))
-        text = pd.read_csv(filepath, sep='delimiter', header=None)
+        text = pd.read_csv(filepath, sep='delimiter', header=None, engine = 'python')
         item = item.strip(".txt")
         paramlist = item.split("-")
         itemdict = {"title" : paramlist[0], "author" : paramlist[1], "year": paramlist[2], "text" : text}
@@ -85,8 +85,13 @@ def nltk_ttr(text):
     text = text.translate(str.maketrans('', '',string.punctuation))
     text = text.translate(str.maketrans('', '',string.digits))
     output = word_tokenize(text)
-    return output
-
+    unique_words = set()
+    book_word_count = len(output)
+    for word in output:
+        unique_words.add(word.lower())
+    unique_word_count = len(unique_words)
+    ttr = (book_word_count / unique_word_count)
+    return ttr
     """Calculates the type-token ratio of a text. Text is tokenized using nltk.word_tokenize."""
 
 def get_ttrs(df):
@@ -94,17 +99,7 @@ def get_ttrs(df):
     results = {}
     for i, row in df.iterrows():
         results[(row["title"])] = nltk_ttr(str(row["text"]))
-    unique_words = set()
-    total_word_count = 0
-    for book in results.values():
-        book_word_count = len(book)
-        total_word_count += book_word_count
-        for word in book:
-            unique_words.add(word)
-        unique_word_count = len(unique_words)
-        ttr = (total_word_count / unique_word_count)
-        print(ttr)
-
+    print(results)
     return results
 
 
@@ -114,7 +109,7 @@ def get_fks(df):
     cmudict = nltk.corpus.cmudict.dict()
     for i, row in df.iterrows():
         results[row["title"]] = round(fk_level(row["text"], cmudict), 4)
-    return results
+    df = df.assign(results)
 
 
 def subjects_by_verb_pmi(doc, target_verb):
@@ -145,6 +140,7 @@ if __name__ == "__main__":
     df = parse(df)
     #nltk_ttr("Example of a sentence to be tokenized")
     get_ttrs(df)
+    print(df.head())
     #print(get_fks(df))
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")
     # print(adjective_counts(df))

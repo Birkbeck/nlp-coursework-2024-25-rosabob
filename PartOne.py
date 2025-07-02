@@ -12,6 +12,7 @@ import string
 from readability import Readability
 import cmudict
 import pronouncing
+import csv
 
 #print("cwd is", os.getcwd())
 #path = Path.cwd() / "datafiles" / "novels"
@@ -35,12 +36,14 @@ def fk_level(text, d):
     Returns:
         float: The Flesch-Kincaid Grade Level of the text. (higher grade is more difficult)
     """
-    read = Readability(text)
-    fk = flesch-kincaid()
+    formatted_text = text.replace ("\n", " ")
+    formatted_text = formatted_text.replace("  ", "")
+    read = Readability(formatted_text)
+    fk = read.flesch_kincaid()
     gradelevel = fk.grade_level
+    print("the gradelev is", gradelevel)
     return gradelevel
 
-    pass
 
 def vowelandycounter(word):
     counter = 0
@@ -55,7 +58,7 @@ def vowelandycounter(word):
 def count_syl(word, d):
     """Counts the number of syllables in a word given a dictionary of syllables per word.
     if the word is not in the dictionary, syllables are estimated by counting vowel clusters - 
-    I have included y as a vowel in this estimate as it improved the esimation with the
+    I have included y as a vowel in this estimate as it improved the estimation with the
     admittedly low number of words I tested it on. 
 
     Args:
@@ -83,10 +86,13 @@ def read_novels(path=Path.cwd() / "texts" / "novels"):
     pd.set_option('display.max_colwidth', 10000)
     for item in os.listdir(path):
         filepath = (str(path) +"/"+ str(item))
-        text = pd.read_csv(filepath, sep='delimiter', header=None, engine = 'python')
+        text = pd.read_csv(filepath, sep='delimiter', header=None, engine = 'python', skip_blank_lines= True, quoting=csv.QUOTE_NONE, on_bad_lines = 'skip')
+        fulltext = ""
+        for row in text[0]:
+            fulltext = fulltext + row
         item = item.strip(".txt")
         paramlist = item.split("-")
-        itemdict = {"title" : paramlist[0], "author" : paramlist[1], "year": paramlist[2], "text" : text}
+        itemdict = {"title" : paramlist[0], "author" : paramlist[1], "year": paramlist[2], "text" : fulltext}
         df = df._append(itemdict, ignore_index = True)
         df = df.sort_values(by = ["year"], ignore_index = True)
     return df
@@ -133,7 +139,8 @@ def get_fks(df):
     results = {}
     cmudict = nltk.corpus.cmudict.dict()
     for i, row in df.iterrows():
-        results[row["title"]] = round(fk_level(row["text"], cmudict), 4)
+        print(row["title"])
+        results[row["title"]] = round (float(fk_level(str(row["text"]), cmudict)), 4)
     df = df.assign(results)
 
 
@@ -153,8 +160,6 @@ def adjective_counts(doc):
     """Extracts the most common adjectives in a parsed document. Returns a list of tuples."""
     pass
 
-sylldict = {}
-
 if __name__ == "__main__":
     """
     uncomment the following lines to run the functions once you have completed them
@@ -162,12 +167,12 @@ if __name__ == "__main__":
     path = Path.cwd() / "datafiles" / "novels"
     df = read_novels(path) # this line will fail until you have completed the read_novels function above.
     nltk.download("cmudict")
-    df = parse(df)
+    #df = parse(df)
     #nltk_ttr("Example of a sentence to be tokenized")
     get_ttrs(df)
     #print(df.head())
-    print(count_syl("artificiality", sylldict))
-    #print(get_fks(df))
+    #print(fk_level("but I thought of my first acquaintance with Chowbok. of the scene in the woodshed. of the innumerable lies he had told me, of his repeated attempts upon the brandy. and of many an incident which I have not thought it worth while to dwell upon. and I could not but derive some satisfaction from the hope that my own efforts might have contributed to the change which had been doubtless wrought upon him. and that the rite which I had performed, however unprofessionally, on that wild upland river-bed, had not been wholly without effect.  I trust that what I have written about him in the earlier part of my book may not be libellous, and that it may do him no harm with his employers.  He was then unregenerate.", cmudict))
+    print(get_fks(df))
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")
     # print(adjective_counts(df))
     """ 

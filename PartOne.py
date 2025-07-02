@@ -9,7 +9,9 @@ import pandas as pd
 import os
 from nltk.tokenize import word_tokenize
 import string
-
+from readability import Readability
+import cmudict
+import pronouncing
 
 #print("cwd is", os.getcwd())
 #path = Path.cwd() / "datafiles" / "novels"
@@ -33,12 +35,28 @@ def fk_level(text, d):
     Returns:
         float: The Flesch-Kincaid Grade Level of the text. (higher grade is more difficult)
     """
+    read = Readability(text)
+    fk = flesch-kincaid()
+    gradelevel = fk.grade_level
+    return gradelevel
+
     pass
+
+def vowelandycounter(word):
+    counter = 0
+    vowelandylist = ["a","e","i","o","u","y"]
+    letters_in_word = list(word)
+    for letter in letters_in_word:
+        if str(letter).lower() in vowelandylist:
+            counter +=1
+    return counter
 
 
 def count_syl(word, d):
     """Counts the number of syllables in a word given a dictionary of syllables per word.
-    if the word is not in the dictionary, syllables are estimated by counting vowel clusters
+    if the word is not in the dictionary, syllables are estimated by counting vowel clusters - 
+    I have included y as a vowel in this estimate as it improved the esimation with the
+    admittedly low number of words I tested it on. 
 
     Args:
         word (str): The word to count syllables for.
@@ -47,8 +65,16 @@ def count_syl(word, d):
     Returns:
         int: The number of syllables in the word.
     """
-    pass
+    if word in d:
+        return d[word]
+    else:
+        phones = pronouncing.phones_for_word(word)
+        if phones !=[]:
+            return pronouncing.syllable_count(phones[0])
+        else: 
+            return(vowelandycounter(word))
 
+    pass
 
 def read_novels(path=Path.cwd() / "texts" / "novels"):
     """Reads texts from a directory of .txt files and returns a DataFrame with the text, title,
@@ -99,7 +125,6 @@ def get_ttrs(df):
     results = {}
     for i, row in df.iterrows():
         results[(row["title"])] = nltk_ttr(str(row["text"]))
-    print(results)
     return results
 
 
@@ -128,7 +153,7 @@ def adjective_counts(doc):
     """Extracts the most common adjectives in a parsed document. Returns a list of tuples."""
     pass
 
-
+sylldict = {}
 
 if __name__ == "__main__":
     """
@@ -140,7 +165,8 @@ if __name__ == "__main__":
     df = parse(df)
     #nltk_ttr("Example of a sentence to be tokenized")
     get_ttrs(df)
-    print(df.head())
+    #print(df.head())
+    print(count_syl("artificiality", sylldict))
     #print(get_fks(df))
     #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")
     # print(adjective_counts(df))

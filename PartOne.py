@@ -55,7 +55,7 @@ def vowelandycounter(word):
 def count_syl(word, d):
     """Counts the number of syllables in a word given a dictionary of syllables per word.
     if the word is not in the dictionary, syllables are estimated by counting vowel clusters - 
-    I have included y as a vowel in this estimate as it improved the esimation with the
+    I have included y as a vowel in this estimate as it improved the estimation with the
     admittedly low number of words I tested it on. 
 
     Args:

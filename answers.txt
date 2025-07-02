@@ -1,1 +1,16 @@
 Answers to the text questions go here.
+
+Question 1(d)
+
+As the Fleisch-Kincaid (F-K) model was developed for evaluation of text for children to determine the grade level of texts, it has some limitations regarding technical aspects of adult texts. 
+For example, a doctor may be very familiar with technical terms from their field like 'appendectomy', but as a 5 syllable word this may appear to F-K as a fairly complex word. 
+A text containing a lot of similar words might be rated as not very readable, when in fact to the intended adult audience it is trivial. (1)
+
+F-K also fails to give a meaningful grade-level answer if encountering a passage comprising very short and very low-average syllable sentences. 
+A good example is the text "Green Eggs and Ham" by Dr Seuss, which scores a meaningless grade-level of -1.3 (2)
+
+References for Q1(d)
+(1) Janice Redish. 2000. Readability formulas have even more limitations than Klare discusses. ACM J. Comput. Doc. 24, 3 (Aug. 2000), 132–137. https://doi.org/10.1145/344599.344637
+(2): Moore JE, Moore P, Millar BC. GREEN EGGS AND HAM BY DR. SEUSS: EMPLOYING DIGITAL TOOLS TO IMPROVE READABILITY OF PATIENT-FACING MATERIALS. Ulster Med J. 2022 Jan;91(1):50. Epub 2022 Feb 11. PMID: 35169340; PMCID: PMC8835417.
+
+

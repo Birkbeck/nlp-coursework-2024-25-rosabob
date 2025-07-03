@@ -13,17 +13,12 @@ from readability import Readability
 import cmudict
 import pronouncing
 import csv
+from spacy.tokens import Doc
 
 #print("cwd is", os.getcwd())
 #path = Path.cwd() / "datafiles" / "novels"
-
-
-
-
 nlp = spacy.load("en_core_web_sm")
 nlp.max_length = 2000000
-
-
 
 def fk_level(text, d):
     """Returns the Flesch-Kincaid Grade Level of a text (higher grade is more difficult).
@@ -36,12 +31,11 @@ def fk_level(text, d):
     Returns:
         float: The Flesch-Kincaid Grade Level of the text. (higher grade is more difficult)
     """
-    formatted_text = text.replace ("\n", " ")
     formatted_text = formatted_text.replace("  ", "")
+    formatted_text = text.replace("\n", " ")
     read = Readability(formatted_text)
     fk = read.flesch_kincaid()
     gradelevel = fk.grade_level
-    print("the gradelev is", gradelevel)
     return gradelevel
 
 
@@ -100,9 +94,9 @@ def read_novels(path=Path.cwd() / "texts" / "novels"):
 
 def parse(df, store_path=Path.cwd() / "pickles", out_name="parsed.pickle"):
     parseddocs = []
-    nlp = spacy.load("en_core_web_sm") #Loads english language for spacy 
+    nlp = spacy.load("en_core_web_sm") #Loads english language for spacy
     for row in df.iterrows():
-        parsed = nlp(str(row[1]["text"]))
+        parsed = nlp(str(row[1]["text"][:99990]))
         parseddocs.append(parsed)
     new_column = {"Parsed Doc": parseddocs}
     df = df.assign(**new_column)
@@ -138,10 +132,15 @@ def get_fks(df):
     """helper function to add fk scores to a dataframe"""
     results = {}
     cmudict = nltk.corpus.cmudict.dict()
+    resultslist = []
     for i, row in df.iterrows():
-        print(row["title"])
-        results[row["title"]] = round (float(fk_level(str(row["text"]), cmudict)), 4)
-    df = df.assign(results)
+        #print(row["title"])
+        fk_gl = round (float(fk_level(str(row["text"]), cmudict)), 4)
+        resultslist.append(fk_gl)
+        #print(results)
+        results["fk_level"] = resultslist
+    df = df.assign(**results)
+    return df
 
 
 def subjects_by_verb_pmi(doc, target_verb):
@@ -158,23 +157,38 @@ def subjects_by_verb_count(doc, verb):
 
 def adjective_counts(doc):
     """Extracts the most common adjectives in a parsed document. Returns a list of tuples."""
-    pass
+    resdict = {}
+    wordlist = []
+    for row in doc['Parsed Doc']:
+        for token in row:
+            if token.pos_ == "ADJ":
+                if (str(token).lower()) not in wordlist:
+                    resdict[(str(token)).lower()] = 1
+                    wordlist.append(str(token).lower())
+                elif str(token) in wordlist:
+                    resdict[str(token)] +=1
+    sorted_resdict_by_value = sorted(resdict.items(), key=lambda x:x[1])
+    results = []
+    for i in range (-10,-1):
+        results.append(sorted_resdict_by_value[i])
+    return results
 
 if __name__ == "__main__":
     """
     uncomment the following lines to run the functions once you have completed them
     """
-    path = Path.cwd() / "datafiles" / "novels"
-    df = read_novels(path) # this line will fail until you have completed the read_novels function above.
-    nltk.download("cmudict")
+    #path = Path.cwd() / "datafiles" / "novels"
+    #df = read_novels(path) # this line will fail until you have completed the read_novels function above.
+    #nltk.download("cmudict")
+    #get_ttrs(df)
+    #get_fks(df)
     #df = parse(df)
     #nltk_ttr("Example of a sentence to be tokenized")
-    get_ttrs(df)
-    #print(df.head())
-    #print(fk_level("but I thought of my first acquaintance with Chowbok. of the scene in the woodshed. of the innumerable lies he had told me, of his repeated attempts upon the brandy. and of many an incident which I have not thought it worth while to dwell upon. and I could not but derive some satisfaction from the hope that my own efforts might have contributed to the change which had been doubtless wrought upon him. and that the rite which I had performed, however unprofessionally, on that wild upland river-bed, had not been wholly without effect.  I trust that what I have written about him in the earlier part of my book may not be libellous, and that it may do him no harm with his employers.  He was then unregenerate.", cmudict))
-    print(get_fks(df))
-    #df = pd.read_pickle(Path.cwd() / "pickles" /"name.pickle")
-    # print(adjective_counts(df))
+    df = pd.read_pickle(Path.cwd()/"parsed.pickle")
+    #print(df['Parsed Doc'])
+    #for row in df['Parsed Doc']:
+        #print (row)
+    print(adjective_counts(df))
     """ 
     for i, row in df.iterrows():
         print(row["title"])

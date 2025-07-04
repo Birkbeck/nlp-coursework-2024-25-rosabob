@@ -14,6 +14,7 @@ import cmudict
 import pronouncing
 import csv
 from spacy.tokens import Doc
+from collections import Counter
 
 #print("cwd is", os.getcwd())
 #path = Path.cwd() / "datafiles" / "novels"
@@ -151,6 +152,19 @@ def subjects_by_verb_pmi(doc, target_verb):
 
 def subjects_by_verb_count(doc, verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
+    results = []
+    counter = 0
+    for row in doc['title']:
+        results.append([row])
+    for row in doc['Parsed Doc']:
+        noun_counter = Counter((str(token)) for token in row if token.dep_ == "nsubj" and (token.head.lemma_ == verb ))
+        sorted_nouncounter_by_value = sorted(noun_counter.items(), key=lambda x:x[1])
+        itemlist = []
+        for item in sorted_nouncounter_by_value[-10:]:
+            itemlist.append(item[0])
+        results[counter].append(itemlist)
+        counter +=1
+    return results
     pass
 
 
@@ -188,13 +202,10 @@ if __name__ == "__main__":
     #print(df['Parsed Doc'])
     #for row in df['Parsed Doc']:
         #print (row)
-    print(adjective_counts(df))
-    """ 
-    for i, row in df.iterrows():
-        print(row["title"])
-        print(subjects_by_verb_count(row["parsed"], "hear"))
-        print("\n")
+    #print(adjective_counts(df))
+    print(subjects_by_verb_count(df, "hear"))
 
+    """ 
     for i, row in df.iterrows():
         print(row["title"])
         print(subjects_by_verb_pmi(row["parsed"], "hear"))

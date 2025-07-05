@@ -19,4 +19,13 @@ if __name__ == "__main__":
     # Therefore the most popular parties are Conservative, Labour, SNP, (Speaker - doesn't count as isn't a party), Lib Dem. 
     df = df.drop(df[(df['party'] != "Conservative") & (df['party'] != "Labour") & (df['party'] != "Scottish National Party") & (df['party'] != "Liberal Democrat")].index)
     #print (df["party"].value_counts())
+    df = df.drop(df[(df['speech_class'] != "Speech")].index)
+    #print (df["speech_class"].value_counts())
+    lenlist =[]
+    for row in df.iterrows():
+        speech = row[1]["speech"]
+        lenlist.append(len(speech))
+    df["speech_length"] = lenlist
+    df = df.drop(df[(df['speech_length'] < 1000)].index)
+    #print (df["speech_length"].value_counts())
 

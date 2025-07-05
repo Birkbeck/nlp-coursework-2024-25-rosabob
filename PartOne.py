@@ -203,7 +203,7 @@ if __name__ == "__main__":
     #for row in df['Parsed Doc']:
         #print (row)
     #print(adjective_counts(df))
-    print(subjects_by_verb_count(df, "hear"))
+    #print(subjects_by_verb_count(df, "hear"))
 
     """ 
     for i, row in df.iterrows():

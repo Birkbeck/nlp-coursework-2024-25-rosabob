@@ -28,4 +28,5 @@ if __name__ == "__main__":
     df["speech_length"] = lenlist
     df = df.drop(df[(df['speech_length'] < 1000)].index)
     #print (df["speech_length"].value_counts())
+    print("The shape of the cleaned df is", df.shape)
 

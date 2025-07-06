@@ -9,6 +9,8 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from sklearn import svm
+from sklearn.metrics import f1_score
+from sklearn.metrics import classification_report 
 
 
 path = Path.cwd() / "datafiles" / "speeches" / "hansard40000.csv"
@@ -53,14 +55,18 @@ def random_forest(vr_train, vr_test, party_train, party_test):
     rf.fit(vr_train, party_train)
     party_pred = rf.predict(vr_test)
     accuracy = accuracy_score(party_test, party_pred)
-    return accuracy
+    rf_f1 = f1_score(party_test, party_pred, average='macro')
+    rf_classification = (classification_report(party_test, party_pred))
+    return rf_f1, rf_classification
 
 def support_vector(vr_train, vr_test, party_train, party_test):
     svmclf = svm.SVC(kernel = "linear")
     svmclf.fit(vr_train, party_train)
     party_pred =svmclf.predict(vr_test)
     accuracy = accuracy_score(party_test, party_pred)
-    return accuracy
+    svm_f1 = f1_score(party_test, party_pred, average='macro')
+    svm_classification = (classification_report(party_test, party_pred))
+    return svm_f1, svm_classification
 
 
 
@@ -69,8 +75,8 @@ if __name__ == "__main__":
     df = clean_df(df)
     vectorised_results = vectorise(df)
     vr_train, vr_test, party_train, party_test = test_train_split (vectorised_results, df)
-    print ("The random forest accuracy is", random_forest(vr_train, vr_test, party_train, party_test))
-    print ("The svm accuracy is", support_vector(vr_train, vr_test, party_train, party_test))
+    print ("The random forest f1 scores and classification reports are", random_forest(vr_train, vr_test, party_train, party_test))
+    print ("The svm f1 scores and classification reports are", support_vector(vr_train, vr_test, party_train, party_test))
     
 
 

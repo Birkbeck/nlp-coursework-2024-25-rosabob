@@ -6,6 +6,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
 from sklearn.model_selection import train_test_split
 import numpy as np 
+from sklearn.ensemble import RandomForestClassifier
 
 
 path = Path.cwd() / "datafiles" / "speeches" / "hansard40000.csv"
@@ -48,7 +49,9 @@ if __name__ == "__main__":
     df = read_speeches(path)
     df = clean_df(df)
     vectorised_results = vectorise(df)
-    vr_train, vr_test = train_test_split(vectorised_results, test_size=0.2, random_state=26)
-    print(vr_train)
+    print(vectorised_results.shape)
+    vectorised_results = vectorised_results
+    vr_train, vr_test, party_train, party_test = train_test_split(vectorised_results, df["party"], test_size=0.2, random_state=26, stratify = df["party"])
+    print(vr_train, party_train.head())
 
 

@@ -7,6 +7,8 @@ import nltk
 from sklearn.model_selection import train_test_split
 import numpy as np 
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+from sklearn import svm
 
 
 path = Path.cwd() / "datafiles" / "speeches" / "hansard40000.csv"
@@ -42,6 +44,23 @@ def vectorise(df):
     vect = tfidf.fit_transform(df["speech"])
     return vect
 
+def test_train_split(vectors, df):
+    vr_train, vr_test, party_train, party_test = train_test_split(vectorised_results, df["party"], test_size=0.2, random_state=26, stratify = df["party"])
+    return vr_train, vr_test, party_train, party_test
+
+def random_forest(vr_train, vr_test, party_train, party_test):
+    rf = RandomForestClassifier(n_estimators= 300)
+    rf.fit(vr_train, party_train)
+    party_pred = rf.predict(vr_test)
+    accuracy = accuracy_score(party_test, party_pred)
+    return accuracy
+
+def support_vector(vr_train, vr_test, party_train, party_test):
+    svmclf = svm.SVC(kernel = "linear")
+    svmclf.fit(vr_train, party_train)
+    party_pred =svmclf.predict(vr_test)
+    accuracy = accuracy_score(party_test, party_pred)
+    return accuracy
 
 
 
@@ -49,9 +68,10 @@ if __name__ == "__main__":
     df = read_speeches(path)
     df = clean_df(df)
     vectorised_results = vectorise(df)
-    print(vectorised_results.shape)
-    vectorised_results = vectorised_results
-    vr_train, vr_test, party_train, party_test = train_test_split(vectorised_results, df["party"], test_size=0.2, random_state=26, stratify = df["party"])
-    print(vr_train, party_train.head())
+    vr_train, vr_test, party_train, party_test = test_train_split (vectorised_results, df)
+    print ("The random forest accuracy is", random_forest(vr_train, vr_test, party_train, party_test))
+    print ("The svm accuracy is", support_vector(vr_train, vr_test, party_train, party_test))
+    
+
 
 

@@ -4,6 +4,9 @@ import os
 import csv
 from sklearn.feature_extraction.text import TfidfVectorizer
 import nltk
+from nltk.tokenize import word_tokenize
+nltk.download('stopwords') 
+from nltk.corpus import stopwords 
 from sklearn.model_selection import train_test_split
 import numpy as np 
 from sklearn.ensemble import RandomForestClassifier
@@ -11,8 +14,7 @@ from sklearn.metrics import accuracy_score
 from sklearn import svm
 from sklearn.metrics import f1_score
 from sklearn.metrics import classification_report 
-from tokenizers import Tokenizer, models, normalizers, pre_tokenizers, trainers, processors, decoders
-import regex
+
 
 
 path = Path.cwd() / "datafiles" / "speeches" / "hansard40000.csv"
@@ -56,7 +58,7 @@ def vectorise_part_d(df):
 
 def vectorise_custom(df):
     """vectorises using my custom tokenizer"""
-    tfidf = TfidfVectorizer(tokenizer = custom_tokenizer, max_features= 3000, stop_words='english',)
+    tfidf = TfidfVectorizer(tokenizer = custom_tokenizer, max_features= 3000, stop_words='english', ngram_range=(1, 3))
     vect = tfidf.fit_transform(df["speech"])
     return vect
 
@@ -83,7 +85,10 @@ def support_vector(vr_train, vr_test, party_train, party_test):
     return svm_f1, svm_classification
 
 def custom_tokenizer(text):
-    pass
+    tokenlist = text.lower().split(" ")
+    en_stop_words = set(stopwords.words('english'))
+    return [token for token in tokenlist if token.isalpha() and token not in en_stop_words and len(token) >4]
+
 
 
 if __name__ == "__main__":
@@ -95,13 +100,17 @@ if __name__ == "__main__":
     #print ("The svm f1 scores and classification reports are", support_vector(vr_train, vr_test, party_train, party_test))
     #vectorised_results_part_d = vectorise_part_d(df)
     #vr_train_d, vr_test_d, party_train_d, party_test_d = test_train_split (vectorised_results_part_d, df)
-    #print ("The random forest f1 scores and classification reports are", random_forest(vr_train_d, vr_test_d, party_train_d, party_test_d))
-    #print ("The svm f1 scores and classification reports are", support_vector(vr_train_d, vr_test_d, party_train_d, party_test_d))
-    vectorised_results_custom = vectorise_custom(df)
-    vr_train_custom, vr_test_custom, party_train_custom, party_test_custom = test_train_split (vectorised_results_custom, df)
-    print ("The random forest f1 scores and classification reports are", random_forest(vr_train_custom, vr_test_custom, party_train_custom, party_test_custom))
-    print ("The svm f1 scores and classification reports are", support_vector(vr_train_custom, vr_test_custom, party_train_custom, party_test_custom))
-    
+    #print ("The random forest f1 scores and classification reports for part d are", random_forest(vr_train_d, vr_test_d, party_train_d, party_test_d))
+    #print ("The svm f1 scores and classification reports for part d are", support_vector(vr_train_d, vr_test_d, party_train_d, party_test_d))
+    #vectorised_results_custom = vectorise_custom(df)
+    #vr_train_custom, vr_test_custom, party_train_custom, party_test_custom = test_train_split (vectorised_results_custom, df)
+    #print ("The random forest f1 scores and classification reports are", random_forest(vr_train_custom, vr_test_custom, party_train_custom, party_test_custom))
+    #print ("The svm f1 scores and classification reports are", support_vector(vr_train_custom, vr_test_custom, party_train_custom, party_test_custom))
+    for item in df["speech"]:
+        print(custom_tokenizer(item))
+        print(item)
+        exit()
+
 
 
 

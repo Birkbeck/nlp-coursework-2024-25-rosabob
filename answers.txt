@@ -14,3 +14,27 @@ References for Q1(d)
 (2): Moore JE, Moore P, Millar BC. GREEN EGGS AND HAM BY DR. SEUSS: EMPLOYING DIGITAL TOOLS TO IMPROVE READABILITY OF PATIENT-FACING MATERIALS. Ulster Med J. 2022 Jan;91(1):50. Epub 2022 Feb 11. PMID: 35169340; PMCID: PMC8835417.
 
 
+Question 2(f)
+
+I wanted my tokenizer to acheive three things, 
+- to split the sentence into words, 
+- to ensure those words were formatted consistently with no capital letters or punctuation
+- to not include less important words such as "I", "we" - these are stopwords and it generally improves model prediction accuracy to remove them. (3)
+
+I then started experimenting to see if doing something else could make it more accurate. 
+I had a look at the words coming out of the tokenizer for the first speech in the df. 
+I noticed some quite short words were still coming out like 'put' and 'sure' and 'want'. 
+It seemed to me like these words might still be less important to determining which 
+political party gave a speech than longer words like 'businesses' or 'funding'. 
+So, I decided to restrict my list of tokens to words over 4 letters. 
+Happily this gave me a better performance. Restricting to tokens over 3 letters actually 
+performed a bit better for SVM, but worse for random forest, so I decided to go with 4. 
+
+def custom_tokenizer(text):
+    tokenlist = text.lower().split(" ") - this line splits the test on spaces and puts all words lower case
+    en_stop_words = set(stopwords.words('english')) - this line establishes that I want to use standard english stopwords
+    return [token for token in tokenlist if token.isalpha() and token not in en_stop_words and len(token) >4] - this line returns tokens that don't contain punctuation, aren't stopwords and have more than 4 characters. 
+
+References for 2f
+
+(3) https://en.wikipedia.org/wiki/Stop_word, accessed 7th July 2026

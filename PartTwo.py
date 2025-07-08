@@ -94,22 +94,22 @@ def custom_tokenizer(text):
 if __name__ == "__main__":
     df = read_speeches(path)
     df = clean_df(df)
-    #vectorised_results = vectorise(df)
-    #vr_train, vr_test, party_train, party_test = test_train_split (vectorised_results, df)
-    #print ("The random forest f1 scores and classification reports are", random_forest(vr_train, vr_test, party_train, party_test))
-    #print ("The svm f1 scores and classification reports are", support_vector(vr_train, vr_test, party_train, party_test))
-    #vectorised_results_part_d = vectorise_part_d(df)
-    #vr_train_d, vr_test_d, party_train_d, party_test_d = test_train_split (vectorised_results_part_d, df)
-    #print ("The random forest f1 scores and classification reports for part d are", random_forest(vr_train_d, vr_test_d, party_train_d, party_test_d))
-    #print ("The svm f1 scores and classification reports for part d are", support_vector(vr_train_d, vr_test_d, party_train_d, party_test_d))
-    #vectorised_results_custom = vectorise_custom(df)
-    #vr_train_custom, vr_test_custom, party_train_custom, party_test_custom = test_train_split (vectorised_results_custom, df)
-    #print ("The random forest f1 scores and classification reports are", random_forest(vr_train_custom, vr_test_custom, party_train_custom, party_test_custom))
-    #print ("The svm f1 scores and classification reports are", support_vector(vr_train_custom, vr_test_custom, party_train_custom, party_test_custom))
-    for item in df["speech"]:
-        print(custom_tokenizer(item))
-        print(item)
-        exit()
+    vectorised_results = vectorise(df)
+    vr_train, vr_test, party_train, party_test = test_train_split (vectorised_results, df)
+    print ("The random forest f1 scores and classification reports are", random_forest(vr_train, vr_test, party_train, party_test))
+    print ("The svm f1 scores and classification reports are", support_vector(vr_train, vr_test, party_train, party_test))
+    vectorised_results_part_d = vectorise_part_d(df)
+    vr_train_d, vr_test_d, party_train_d, party_test_d = test_train_split (vectorised_results_part_d, df)
+    print ("The random forest f1 scores and classification reports for part d are", random_forest(vr_train_d, vr_test_d, party_train_d, party_test_d))
+    print ("The svm f1 scores and classification reports for part d are", support_vector(vr_train_d, vr_test_d, party_train_d, party_test_d))
+    vectorised_results_custom = vectorise_custom(df)
+    vr_train_custom, vr_test_custom, party_train_custom, party_test_custom = test_train_split (vectorised_results_custom, df)
+    print ("The random forest f1 scores and classification reports for my custom function are", random_forest(vr_train_custom, vr_test_custom, party_train_custom, party_test_custom))
+    print ("The svm f1 scores and classification reports for my custom function are", support_vector(vr_train_custom, vr_test_custom, party_train_custom, party_test_custom))
+    #for item in df["speech"]:
+        #print(custom_tokenizer(item))
+        #print(item)
+        #exit()
 
 
 

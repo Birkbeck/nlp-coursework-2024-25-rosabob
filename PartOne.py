@@ -16,7 +16,6 @@ import csv
 from spacy.tokens import Doc
 from collections import Counter
 
-#print("cwd is", os.getcwd())
 #path = Path.cwd() / "datafiles" / "novels"
 nlp = spacy.load("en_core_web_sm")
 nlp.max_length = 2000000
@@ -135,10 +134,8 @@ def get_fks(df):
     cmudict = nltk.corpus.cmudict.dict()
     resultslist = []
     for i, row in df.iterrows():
-        #print(row["title"])
         fk_gl = round (float(fk_level(str(row["text"]), cmudict)), 4)
         resultslist.append(fk_gl)
-        #print(results)
         results["fk_level"] = resultslist
     df = df.assign(**results)
     return df
@@ -159,7 +156,6 @@ def subjects_by_verb_pmi(doc, verb):
                 verbcounter +=1
         noun_counter = Counter((str(token))for token in row)
         noun_verb_counter = Counter((str(token)) for token in row if token.dep_ == "nsubj" and (token.head.lemma_ == verb ))
-        #print("The doc length is", doclength, "The verbcounter is", verbcounter, "The nouncounter is", noun_counter, "The nounverbcounter is", noun_verb_counter)
         pmi = dict()
         for key in noun_verb_counter.keys():
             pmi[key] = (noun_verb_counter[key] / doclength)/ (noun_counter[key] / doclength * verbcounter / doclength)
@@ -224,17 +220,10 @@ if __name__ == "__main__":
     df = parse(df)
     #nltk_ttr("Example of a sentence to be tokenized")
     #df = pd.read_pickle(Path.cwd()/"parsed.pickle")
-    #print(df['Parsed Doc'])
-    #for row in df['Parsed Doc']:
-        #print (row)
     #print(adjective_counts(df))
     #print(subjects_by_verb_count(df, "hear"))
-    #for row in df['Parsed Doc']:
-        #print (row)
     #print(adjective_counts(df))
     print(subjects_by_verb_pmi(df, "hear"))
-    #for i, row in df.iterrows():
-        #print(subjects_by_verb_pmi(row["parsed"], "hear"))
-        #print("\n")
+
         
 

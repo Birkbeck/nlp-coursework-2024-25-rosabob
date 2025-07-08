@@ -212,18 +212,17 @@ if __name__ == "__main__":
     """
     uncomment the following lines to run the functions once you have completed them
     """
-    path = Path.cwd() / "datafiles" / "novels"
-    df = read_novels(path) # this line will fail until you have completed the read_novels function above.
+    #path = Path.cwd() / "datafiles" / "novels"
+    #df = read_novels(path) # this line will fail until you have completed the read_novels function above.
     #nltk.download("cmudict")
     #get_ttrs(df)
     #get_fks(df)
-    df = parse(df)
-    #nltk_ttr("Example of a sentence to be tokenized")
+    #df = parse(df)
     #df = pd.read_pickle(Path.cwd()/"parsed.pickle")
     #print(adjective_counts(df))
     #print(subjects_by_verb_count(df, "hear"))
     #print(adjective_counts(df))
-    print(subjects_by_verb_pmi(df, "hear"))
+    #print(subjects_by_verb_pmi(df, "hear"))
 
         
 

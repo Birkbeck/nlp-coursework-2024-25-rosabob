@@ -144,9 +144,34 @@ def get_fks(df):
     return df
 
 
-def subjects_by_verb_pmi(doc, target_verb):
+def subjects_by_verb_pmi(doc, verb):
     """Extracts the most common subjects of a given verb in a parsed document. Returns a list."""
-    pass
+    results = []
+    counter = 0
+    verbcounter = 0
+    noun_counter =0
+    doclength = len(doc["Parsed Doc"])
+    for row in doc['title']:
+        results.append([row])
+    for row in doc['Parsed Doc']:
+        for token in row:
+            if token.lemma_ == verb:
+                verbcounter +=1
+        noun_counter = Counter((str(token))for token in row)
+        noun_verb_counter = Counter((str(token)) for token in row if token.dep_ == "nsubj" and (token.head.lemma_ == verb ))
+        #print("The doc length is", doclength, "The verbcounter is", verbcounter, "The nouncounter is", noun_counter, "The nounverbcounter is", noun_verb_counter)
+        pmi = dict()
+        for key in noun_verb_counter.keys():
+            pmi[key] = (noun_verb_counter[key] / doclength)/ (noun_counter[key] / doclength * verbcounter / doclength)
+            pmi.update({key : pmi[key]})
+        sorted_pmi_by_value = sorted(pmi.items(), key=lambda x:x[1])
+        itemlist = []
+        for item in sorted_pmi_by_value[-10:]:
+            itemlist.append(item[0])
+        results[counter].append(itemlist)
+        counter +=1
+    return results
+
 
 
 
@@ -165,7 +190,7 @@ def subjects_by_verb_count(doc, verb):
         results[counter].append(itemlist)
         counter +=1
     return results
-    pass
+
 
 
 
@@ -191,24 +216,25 @@ if __name__ == "__main__":
     """
     uncomment the following lines to run the functions once you have completed them
     """
-    #path = Path.cwd() / "datafiles" / "novels"
-    #df = read_novels(path) # this line will fail until you have completed the read_novels function above.
+    path = Path.cwd() / "datafiles" / "novels"
+    df = read_novels(path) # this line will fail until you have completed the read_novels function above.
     #nltk.download("cmudict")
     #get_ttrs(df)
     #get_fks(df)
-    #df = parse(df)
+    df = parse(df)
     #nltk_ttr("Example of a sentence to be tokenized")
-    df = pd.read_pickle(Path.cwd()/"parsed.pickle")
+    #df = pd.read_pickle(Path.cwd()/"parsed.pickle")
     #print(df['Parsed Doc'])
     #for row in df['Parsed Doc']:
         #print (row)
     #print(adjective_counts(df))
     #print(subjects_by_verb_count(df, "hear"))
-
-    """ 
-    for i, row in df.iterrows():
-        print(row["title"])
-        print(subjects_by_verb_pmi(row["parsed"], "hear"))
-        print("\n")
-    """
+    #for row in df['Parsed Doc']:
+        #print (row)
+    #print(adjective_counts(df))
+    print(subjects_by_verb_pmi(df, "hear"))
+    #for i, row in df.iterrows():
+        #print(subjects_by_verb_pmi(row["parsed"], "hear"))
+        #print("\n")
+        
 
